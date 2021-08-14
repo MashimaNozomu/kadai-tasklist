@@ -30,7 +30,7 @@
         </header>
         
          {{-- ナビゲーションバー --}}
-        @include('commons.navbar')
+        
         <div class="container">
             {{-- エラーメッセージ --}}
             @include('commons.error_messages')
