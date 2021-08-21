@@ -17,7 +17,22 @@ class TasksController extends Controller
     {
         $tasks = Task::all();
         
-        return view('tasks.index',['tasks' => $tasks,]);
+        //return view('tasks.index',['tasks' => $tasks,]);
+        $data = [];
+        if(\Auth::check()){
+        
+            $user = \Auth::user();
+            
+            $tasks = $user->tasks()->orderBy('created_at', 'desc')->paginate(10);
+            
+
+            $data = [
+                'user'=>$user,
+                'tasks'=>$tasks,
+                ];
+        }
+        
+        return view('welcome',$data);
     }
 
     /**
@@ -43,12 +58,22 @@ class TasksController extends Controller
         $request->validate([
                 'content'=>'required',
                 'status'=>'required|max:10',
+                
             ]);
         
-        $task = new Task;
-        $task->status = $request->status;
-        $task->content = $request->content;
-        $task->save();
+        //$task = new Task;
+        //$task->status = $request->status;
+        //$task->content = $request->content;
+        
+        //$task->save();
+        
+        $request->user()->tasks()->create([
+            //'user_id' => $request->user_id,
+            'content' => $request->content,
+            'status' => $request->status,
+            
+        ]);
+
         
         return redirect('/');
     }
@@ -97,6 +122,7 @@ class TasksController extends Controller
         $task = Task::findOrFail($id);
         $task->status = $request->status;
         $task->content = $request->content;
+        
         $task->save();
         
         return redirect('/');
